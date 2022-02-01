@@ -1,21 +1,31 @@
 class UsersController < ApplicationController
 
-    def index
-        users = User.all
-        render json: users
-    end
 
     def create
         user = User.create!(user_params)
+        session[:user_id] = user.id
         render json: user, status: :created
     end
+
+    def show
+        if current_user
+            render json: current_user, status: :ok
+        else
+            render json: "No one is logged in", status: :unauthorized
+        end
+    end
+
+    def destroy
+        user = User.find(params[:id])
+        user.destroy
+        head :no_content
 
     private
 
     def user_params
-        params.permit(:name, :username, :password)
+        params.permit(:username, :email, :password)
     end
 
-    def record_not_found
-        render json: {error: "User not found"}, status: :not_found
+    def record_invalid(invalid)
+        render json: {error: invalid.record.errors.full_messages}, status: :unprocessable_entity
 end
