@@ -1,11 +1,11 @@
 class ApplicationController < ActionController::API
   include ActionController::Cookies
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
-  rescue_from ActiveRecord::RecordInvalid, with: :invalid_record
+  rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
 
   private
 
-  def invalid_record(invalid)
+  def record_invalid(invalid)
     render json: {error: invalid.record.errors.full_messages}, status: :unprocessable_entity
   end
 
